@@ -1,5 +1,6 @@
 import math
 import random
+import statistics
 
 class Optimization:
     population = []
@@ -78,6 +79,12 @@ class Optimization:
         best_solution = self.fitness(self.population[0])
 
         return self.population[0], best_solution
+    
+    def fitness_statistics(self):
+        fitness_population = []
+        for individuo in self.population:
+            fitness_population.append(self.fitness(individuo))
+        return statistics.mean(fitness_population),statistics.pvariance(fitness_population),statistics.pstdev(fitness_population)
     
     def update_success_rate(self, parents: list[list[float]], offspring: list[float]):
         offspring_fitness = self.fitness(offspring)
