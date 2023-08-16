@@ -4,11 +4,14 @@ import random
 class Optimization:
     population = []
 
-    def __init__(self, population_size: int, dimension: int):
+    def __init__(self, population_size: int, dimension: int, c: float):
         self.population_size = population_size
         self.dimension = dimension
         self.learning_rate = 1/math.sqrt(self.dimension)
         self.min_mutation_step = 1
+        self.c = c
+        self.successful_mutations = 0
+        self.total_mutations = 0
         
     def generate_population(self, min_gene: float, max_gene: float):
         self.population = []
@@ -42,12 +45,17 @@ class Optimization:
     
     def mutate(self, chromosome: list[float]):
         mutation_step = chromosome[-1]
-        params = chromosome[:-1]
+        params = chromosome[:self.dimension]
 
         mutated_mutation_step = mutation_step * math.exp(random.gauss(0, self.learning_rate))
 
         if mutated_mutation_step < self.min_mutation_step:
             mutated_mutation_step = self.min_mutation_step
+        
+        if self.get_mutation_success_rate() > 1/5:
+            mutated_mutation_step = mutated_mutation_step / self.c
+        if self.get_mutation_success_rate() < 1/5:
+            mutated_mutation_step = mutated_mutation_step * self.c
         
         mutated_params = [x+random.gauss(0, mutated_mutation_step) for x in params]
         mutated_chromosome = mutated_params+[mutated_mutation_step]
@@ -70,3 +78,18 @@ class Optimization:
         best_solution = self.fitness(self.population[0])
 
         return self.population[0], best_solution
+    
+    def update_success_rate(self, parents: list[list[float]], offspring: list[float]):
+        offspring_fitness = self.fitness(offspring)
+        for parent in parents:
+            parent_fitness = self.fitness(parent)
+            if offspring_fitness > parent_fitness:
+                self.successful_mutations += 1
+                break
+
+        self.total_mutations += 1
+    
+    def get_mutation_success_rate(self):
+        if self.total_mutations == 0:
+            return 0
+        return self.successful_mutations / self.total_mutations
