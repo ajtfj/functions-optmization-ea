@@ -1,6 +1,6 @@
 import math
 import random
-import statistics
+import numpy as np
 
 class Optimization:
     population = []
@@ -58,7 +58,8 @@ class Optimization:
         if self.get_mutation_success_rate() < 1/5:
             mutated_mutation_step = mutated_mutation_step * self.c
         
-        mutated_params = [x+random.gauss(0, mutated_mutation_step) for x in params]
+        bounded_mutation = lambda x: min(max(x, self.gene_lower_bound), self.gene_upper_bound)
+        mutated_params = [bounded_mutation(x+random.gauss(0, mutated_mutation_step)) for x in params]
         mutated_chromosome = mutated_params+[mutated_mutation_step]
 
         return mutated_chromosome
@@ -84,7 +85,7 @@ class Optimization:
         fitness_population = []
         for individuo in self.population:
             fitness_population.append(self.fitness(individuo))
-        return statistics.mean(fitness_population),statistics.pvariance(fitness_population),statistics.pstdev(fitness_population)
+        return np.mean(fitness_population), np.std(fitness_population)
     
     def update_success_rate(self, parents: list[list[float]], offspring: list[float]):
         offspring_fitness = self.fitness(offspring)
