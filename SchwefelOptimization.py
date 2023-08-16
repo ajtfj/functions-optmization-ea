@@ -9,5 +9,5 @@ class SchwefelOptimization(Optimization):
         Optimization.generate_population(self, -500, 500)
 
     def fitness(self, chromosome: list[float]):
-        result = schwefel(chromosome)
+        result = schwefel(chromosome[:self.dimension])
         return result

@@ -9,5 +9,5 @@ class RastriginOptimization(Optimization):
         Optimization.generate_population(self, self.gene_lower_bound, self.gene_upper_bound)
 
     def fitness(self, chromosome: list[float]):
-        result = rastrigin(chromosome)
+        result = rastrigin(chromosome[:self.dimension])
         return result
