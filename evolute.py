@@ -1,6 +1,6 @@
 from Optimization import Optimization
 
-def evolute(instance: Optimization, max_generation=100000, μ=30, λ=200, optimal_solution=0):
+def evolute(instance: Optimization, max_generation=200000, μ=30, λ=200, optimal_solution=0):
     instance.generate_population()
 
     _, best_solution = instance.best_solution()
